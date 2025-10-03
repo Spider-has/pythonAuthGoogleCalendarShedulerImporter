@@ -1,4 +1,5 @@
 
+import argparse
 from services.config_service import ConfigManager
 from services.google_auth import GoogleAuth
 from services.google_calendar import GoogleCalendarService
@@ -10,6 +11,15 @@ from config.config import AUTH_MODE, LAST_RUN_FILE, UPDATE_INTERVAL_HOURS
 from view.console_view import ConsoleUserInteraction
 
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--non-interactive', action='store_true',
+                        help='Запуск в фоновом режиме (без запросов пользователю)')
+    args = parser.parse_args()
+
+    config_manager = ConfigManager()
+    config = config_manager.load_config()
+    
     tracker = RunTracker(file_path=LAST_RUN_FILE, interval_hours=UPDATE_INTERVAL_HOURS)
     if not tracker.should_run():
         print("🕒 Обновление не требуется. Выход.")
@@ -19,23 +29,25 @@ def main():
     calendar_service = GoogleCalendarService(credentials)
 
     # 2. Загрузка конфигурации
-    config_manager = ConfigManager()
-    config = config_manager.load_config()
 
     if not config:
-        print("📋 Это первый запуск. Настроим календарь для расписания.")
+        if args.non_interactive:
+            print("❌ Конфигурация отсутствует. Запустите init.sh для настройки.")
+            return
+        else:
+            print("📋 Это первый запуск. Настроим календарь для расписания.")
 
-        ui = ConsoleUserInteraction(calendar_service)
+            ui = ConsoleUserInteraction(calendar_service)
 
-          # 1. Выбор календаря
-        calendar_id = ui.prompt_calendar_selection()
-        
-        # 2. Количество недель
-        weeks_ahead = ui.prompt_weeks_ahead()
-        
-        # 3. Сохранение
-        config_manager.save_config(calendar_id, weeks_ahead)
-        print(f"\n💾 ID календаря сохранён\n")
+            # 1. Выбор календаря
+            calendar_id = ui.prompt_calendar_selection()
+            
+            # 2. Количество недель
+            weeks_ahead = ui.prompt_weeks_ahead()
+            
+            # 3. Сохранение
+            config_manager.save_config(calendar_id, weeks_ahead)
+            print(f"\n💾 ID календаря сохранён\n")
     else:
         calendar_id, weeks_ahead = config
         print(f"✅ Используется календарь (ID: {calendar_id[:30]}...)")

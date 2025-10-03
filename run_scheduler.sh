@@ -1,3 +1,4 @@
+#!/bin/bash
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 cd "$SCRIPT_DIR" || exit 1
@@ -22,7 +23,7 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 
 log "Запуск main.py..."
-"$VENV_DIR/bin/python" "src/main.py" >> "$LOG_FILE" 2>&1
+"$VENV_DIR/bin/python" "src/main.py" --non-interactive  >> "$LOG_FILE" 2>&1
 EXIT_CODE=$?
 
 log "========== ЗАВЕРШЕНИЕ (код: $EXIT_CODE) =========="

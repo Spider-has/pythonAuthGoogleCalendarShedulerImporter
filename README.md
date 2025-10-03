@@ -44,6 +44,10 @@ git clone https://github.com/Spider-has/pythonAuthGoogleCalendarShedulerImporter
 ### 2. Сделайте скрипт исполняемым
 
 ```bash
+chmod +x init.sh
+```
+
+```bash
 chmod +x run_scheduler.sh
 ```
 
@@ -70,7 +74,7 @@ chmod +x run_scheduler.sh
 После перезагрузки или ручного запуска:
 
 ```bash
-./run_scheduler.sh
+./init.sh
 ```
 
 Скрипт автоматически:
@@ -80,5 +84,7 @@ chmod +x run_scheduler.sh
 - Откроет браузер для авторизации в Google,
 - Предложит выбрать календарь или создать новый,
 - Сохранит настройки для последующих запусков.
+
+во вследующих последующих включениях лучше запускать ./run_scheduler.sh. Он гарантирует, что скрипт справильным конфигом выполнится в фоновом режиме
 
 > Все логи сохраняются в папке `logs/autostart.log`.
